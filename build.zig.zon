@@ -14,7 +14,7 @@
             .url = "https://github.com/zig-gamedev/zpool/archive/refs/heads/main.tar.gz",
             .hash = "1220e600a92d73dc8c3b5303351dcc67352114c975e59ae55de11b637ec173e75455",
         },
-        .@"system-sdk" = .{
+        .system_sdk = .{
             .url = "https://github.com/zig-gamedev/system-sdk/archive/refs/heads/main.tar.gz",
             .hash = "1220f94cae247d9249ded5372571d54f2d6dd303ab116ef02b748725c917a04351a6",
         },
