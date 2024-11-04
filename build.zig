@@ -138,7 +138,6 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    @import("system_sdk").addLibraryPathsTo(tests);
     tests.addIncludePath(b.path("libs/dawn/include"));
     tests.linkLibrary(zdawn);
     linkSystemDeps(b, tests);
