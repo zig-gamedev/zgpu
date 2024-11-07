@@ -116,7 +116,8 @@ pub fn build(b: *std.Build) void {
 
     zdawn.linkSystemLibrary("dawn");
     zdawn.linkLibC();
-    zdawn.linkLibCpp();
+    if (target.result.abi != .msvc)
+        zdawn.linkLibCpp();
 
     zdawn.addIncludePath(b.path("libs/dawn/include"));
     zdawn.addIncludePath(b.path("src"));
