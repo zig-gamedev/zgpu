@@ -1,4 +1,5 @@
 const std = @import("std");
+const emscripten = @import("builtin").target.os.tag == .emscripten;
 
 test "extern struct ABI compatibility" {
     @setEvalBranchQuota(10_000);
@@ -66,28 +67,56 @@ pub const BackendType = enum(u32) {
     opengles,
 };
 
-pub const BlendFactor = enum(u32) {
-    zero = 0x00000000,
-    one = 0x00000001,
-    src = 0x00000002,
-    one_minus_src = 0x00000003,
-    src_alpha = 0x00000004,
-    one_minus_src_alpha = 0x00000005,
-    dst = 0x00000006,
-    one_minus_dst = 0x00000007,
-    dst_alpha = 0x00000008,
-    one_minus_dst_alpha = 0x00000009,
-    src_alpha_saturated = 0x0000000A,
-    constant = 0x0000000B,
-    one_minus_constant = 0x0000000C,
+pub const BlendFactor = switch (emscripten) {
+    true => enum(u32) {
+        undef = 0x00000000,
+        zero = 0x00000001,
+        one = 0x00000002,
+        src = 0x00000003,
+        one_minus_src = 0x00000004,
+        src_alpha = 0x00000005,
+        one_minus_src_alpha = 0x00000006,
+        dst = 0x00000007,
+        one_minus_dst = 0x00000008,
+        dst_alpha = 0x00000009,
+        one_minus_dst_alpha = 0x0000000A,
+        src_alpha_saturated = 0x0000000B,
+        constant = 0x0000000C,
+        one_minus_constant = 0x0000000D,
+    },
+    false => enum(u32) {
+        zero = 0x00000000,
+        one = 0x00000001,
+        src = 0x00000002,
+        one_minus_src = 0x00000003,
+        src_alpha = 0x00000004,
+        one_minus_src_alpha = 0x00000005,
+        dst = 0x00000006,
+        one_minus_dst = 0x00000007,
+        dst_alpha = 0x00000008,
+        one_minus_dst_alpha = 0x00000009,
+        src_alpha_saturated = 0x0000000A,
+        constant = 0x0000000B,
+        one_minus_constant = 0x0000000C,
+    },
 };
 
-pub const BlendOperation = enum(u32) {
-    add = 0x00000000,
-    subtract = 0x00000001,
-    reverse_subtract = 0x00000002,
-    min = 0x00000003,
-    max = 0x00000004,
+pub const BlendOperation = switch (emscripten) {
+    true => enum(u32) {
+        undef = 0x00000000,
+        add = 0x00000001,
+        subtract = 0x00000002,
+        reverse_subtract = 0x00000003,
+        min = 0x00000008,
+        max = 0x00000004,
+    },
+    false => enum(u32) {
+        add = 0x00000000,
+        subtract = 0x00000001,
+        reverse_subtract = 0x00000002,
+        min = 0x00000003,
+        max = 0x00000004,
+    },
 };
 
 pub const BufferBindingType = enum(u32) {
@@ -268,12 +297,22 @@ pub const PresentMode = enum(u32) {
     fifo = 0x00000002,
 };
 
-pub const PrimitiveTopology = enum(u32) {
-    point_list = 0x00000000,
-    line_list = 0x00000001,
-    line_strip = 0x00000002,
-    triangle_list = 0x00000003,
-    triangle_strip = 0x00000004,
+pub const PrimitiveTopology = switch (emscripten) {
+    true => enum(u32) {
+        undefined = 0x00000000,
+        point_list = 0x00000001,
+        line_list = 0x00000002,
+        line_strip = 0x00000003,
+        triangle_list = 0x00000004,
+        triangle_strip = 0x00000005,
+    },
+    false => enum(u32) {
+        point_list = 0x00000000,
+        line_list = 0x00000001,
+        line_strip = 0x00000002,
+        triangle_list = 0x00000003,
+        triangle_strip = 0x00000004,
+    },
 };
 
 pub const QueryType = enum(u32) {
@@ -410,10 +449,18 @@ pub const TextureAspect = enum(u32) {
     plane1_only = 0x00000004,
 };
 
-pub const TextureDimension = enum(u32) {
-    tdim_1d = 0x00000000,
-    tdim_2d = 0x00000001,
-    tdim_3d = 0x00000002,
+pub const TextureDimension = switch (emscripten) {
+    true => enum(u32) {
+        undef = 0x00000000,
+        tdim_1d = 0x00000001,
+        tdim_2d = 0x00000002,
+        tdim_3d = 0x00000003,
+    },
+    false => enum(u32) {
+        tdim_1d = 0x00000000,
+        tdim_2d = 0x00000001,
+        tdim_3d = 0x00000002,
+    },
 };
 
 pub const TextureFormat = enum(u32) {
@@ -568,10 +615,18 @@ pub const VertexFormat = enum(u32) {
     sint32x4 = 0x0000001E,
 };
 
-pub const VertexStepMode = enum(u32) {
-    vertex = 0x00000000,
-    instance = 0x00000001,
-    vertex_buffer_not_used = 0x00000002,
+pub const VertexStepMode = switch (emscripten) {
+    true => enum(u32) {
+        undefined = 0x00000000,
+        vertex_buffer_not_used = 0x00000001,
+        vertex = 0x00000002,
+        instance = 0x00000003,
+    },
+    false => enum(u32) {
+        vertex = 0x00000000,
+        instance = 0x00000001,
+        vertex_buffer_not_used = 0x00000002,
+    },
 };
 
 pub const BufferUsage = packed struct(u32) {
@@ -1059,13 +1114,24 @@ pub const Color = extern struct {
     a: f64,
 };
 
-pub const RenderPassColorAttachment = extern struct {
-    next_in_chain: ?*const ChainedStruct = null,
-    view: ?TextureView,
-    resolve_target: ?TextureView = null,
-    load_op: LoadOp,
-    store_op: StoreOp,
-    clear_value: Color = .{ .r = 0.0, .g = 0.0, .b = 0.0, .a = 0.0 },
+pub const RenderPassColorAttachment = switch (emscripten) {
+    true => extern struct {
+        next_in_chain: ?*const ChainedStruct = null,
+        view: ?TextureView,
+        depth_slice: u32 = std.math.maxInt(u32),
+        resolve_target: ?TextureView = null,
+        load_op: LoadOp,
+        store_op: StoreOp,
+        clear_value: Color = .{ .r = 0.0, .g = 0.0, .b = 0.0, .a = 0.0 },
+    },
+    false => extern struct {
+        next_in_chain: ?*const ChainedStruct = null,
+        view: ?TextureView,
+        resolve_target: ?TextureView = null,
+        load_op: LoadOp,
+        store_op: StoreOp,
+        clear_value: Color = .{ .r = 0.0, .g = 0.0, .b = 0.0, .a = 0.0 },
+    },
 };
 
 pub const RenderPassDepthStencilAttachment = extern struct {
@@ -2133,15 +2199,29 @@ pub const Queue = *opaque {
         callback: QueueWorkDoneCallback,
         userdata: ?*anyopaque,
     ) void {
-        wgpuQueueOnSubmittedWorkDone(queue, signal_value, callback, userdata);
+        if (emscripten) {
+            const oswd = @extern(
+                *const fn (
+                    queue: Queue,
+                    callback: QueueWorkDoneCallback,
+                    userdata: ?*anyopaque,
+                ) callconv(.C) void,
+                .{ .name = "wgpuQueueOnSubmittedWorkDone" },
+            );
+            oswd(queue, callback, userdata);
+        } else {
+            const oswd = @extern(
+                *const fn (
+                    queue: Queue,
+                    signal_value: u64,
+                    callback: QueueWorkDoneCallback,
+                    userdata: ?*anyopaque,
+                ) callconv(.C) void,
+                .{ .name = "wgpuQueueOnSubmittedWorkDone" },
+            );
+            oswd(queue, signal_value, callback, userdata);
+        }
     }
-    extern fn wgpuQueueOnSubmittedWorkDone(
-        queue: Queue,
-        signal_value: u64,
-        callback: QueueWorkDoneCallback,
-        userdata: ?*anyopaque,
-    ) void;
-
     pub fn setLabel(queue: Queue, label: ?[*:0]const u8) void {
         wgpuQueueSetLabel(queue, label);
     }
@@ -2164,7 +2244,7 @@ pub const Queue = *opaque {
             buffer,
             buffer_offset,
             @as(*const anyopaque, @ptrCast(data.ptr)),
-            @as(u64, @intCast(data.len)) * @sizeOf(T),
+            data.len * @sizeOf(T),
         );
     }
     extern fn wgpuQueueWriteBuffer(
@@ -2172,7 +2252,7 @@ pub const Queue = *opaque {
         buffer: Buffer,
         buffer_offset: u64,
         data: *const anyopaque,
-        size: u64,
+        size: usize,
     ) void;
 
     pub fn writeTexture(
@@ -2196,7 +2276,7 @@ pub const Queue = *opaque {
         queue: Queue,
         destination: *const ImageCopyTexture,
         data: *const anyopaque,
-        data_size: u64,
+        data_size: usize,
         data_layout: *const TextureDataLayout,
         write_size: *const Extent3D,
     ) void;
@@ -2850,3 +2930,12 @@ pub const TextureView = *opaque {
     }
     extern fn wgpuTextureViewRelease(texture_view: TextureView) void;
 };
+
+pub const InstanceDescriptor = extern struct {
+    next_in_chain: ?*const ChainedStruct = null,
+};
+pub inline fn createInstance(desc: InstanceDescriptor) Instance {
+    _ = desc;
+    return wgpuCreateInstance(null);
+}
+extern fn wgpuCreateInstance(desc: ?*const InstanceDescriptor) Instance;
