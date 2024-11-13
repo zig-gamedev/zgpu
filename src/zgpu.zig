@@ -565,6 +565,7 @@ pub const GraphicsContext = struct {
         var dim = descriptor.dimension;
         if (dim == .undef) {
             dim = switch (info.dimension) {
+                .undef => .undef,
                 .tdim_1d => .tvdim_1d,
                 .tdim_2d => .tvdim_2d,
                 .tdim_3d => .tvdim_3d,

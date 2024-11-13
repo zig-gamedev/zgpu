@@ -2235,7 +2235,7 @@ pub const Queue = *opaque {
     pub fn writeBuffer(
         queue: Queue,
         buffer: Buffer,
-        buffer_offset: u64,
+        buffer_offset: usize,
         comptime T: type,
         data: []const T,
     ) void {
