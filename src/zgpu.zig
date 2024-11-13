@@ -516,6 +516,22 @@ pub const GraphicsContext = struct {
         return .normal_execution;
     }
 
+    pub fn canRender(gctx: *GraphicsContext) bool {
+        if (emscripten) {
+            if (gctx.uniforms.stage.buffers[gctx.uniforms.stage.current].slice == null) {
+                var i: u32 = 0;
+                while (i < gctx.uniforms.stage.num) : (i += 1) {
+                    if (gctx.uniforms.stage.buffers[i].slice != null) {
+                        gctx.uniforms.stage.current = i;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
     //
     // Resources
     //
