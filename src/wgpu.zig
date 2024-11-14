@@ -2242,7 +2242,7 @@ pub const Queue = *opaque {
         wgpuQueueWriteBuffer(
             queue,
             buffer,
-            buffer_offset,
+            @intCast(buffer_offset),
             @as(*const anyopaque, @ptrCast(data.ptr)),
             data.len * @sizeOf(T),
         );
