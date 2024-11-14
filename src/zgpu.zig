@@ -11,6 +11,7 @@ const assert = std.debug.assert;
 const wgsl = @import("common_wgsl.zig");
 const zgpu_options = @import("zgpu_options");
 pub const wgpu = @import("wgpu.zig");
+pub const slog = std.log.scoped(.zgpu); // scoped log that can be comptime processed in main logger
 const emscripten = @import("builtin").target.os.tag == .emscripten;
 
 test {
