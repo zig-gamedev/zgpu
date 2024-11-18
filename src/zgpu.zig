@@ -1335,7 +1335,7 @@ pub fn imageInfoToTextureFormat(num_components: u32, bytes_per_component: u32, i
 
 pub const BufferInfo = struct {
     gpuobj: ?wgpu.Buffer = null,
-    size: usize = 0,
+    size: u64 = 0,
     usage: wgpu.BufferUsage = .{},
 };
 
@@ -1589,6 +1589,7 @@ const SurfaceDescriptorTag = enum {
     windows_hwnd,
     xlib,
     wayland,
+    canvas_html,
 };
 
 const SurfaceDescriptor = union(SurfaceDescriptorTag) {
