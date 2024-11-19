@@ -560,9 +560,8 @@ pub const GraphicsContext = struct {
         const texture = gctx.lookupResource(texture_handle).?;
         const info = gctx.lookupResourceInfo(texture_handle).?;
         var dim = descriptor.dimension;
-        if (dim == .undef) {
+        if (!emscripten and dim == .undef) {
             dim = switch (info.dimension) {
-                .undef => .undef,
                 .tdim_1d => .tvdim_1d,
                 .tdim_2d => .tvdim_2d,
                 .tdim_3d => .tvdim_3d,
