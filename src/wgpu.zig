@@ -1526,10 +1526,10 @@ pub const CommandEncoder = *opaque {
     pub fn copyBufferToBuffer(
         command_encoder: CommandEncoder,
         source: Buffer,
-        source_offset: usize,
+        source_offset: u64,
         destination: Buffer,
-        destination_offset: usize,
-        size: usize,
+        destination_offset: u64,
+        size: u64,
     ) void {
         wgpuCommandEncoderCopyBufferToBuffer(
             command_encoder,
@@ -1543,10 +1543,10 @@ pub const CommandEncoder = *opaque {
     extern fn wgpuCommandEncoderCopyBufferToBuffer(
         command_encoder: CommandEncoder,
         source: Buffer,
-        source_offset: usize,
+        source_offset: u64,
         destination: Buffer,
-        destination_offset: usize,
-        size: usize,
+        destination_offset: u64,
+        size: u64,
     ) void;
 
     pub fn copyBufferToTexture(
