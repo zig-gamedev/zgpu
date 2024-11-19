@@ -291,10 +291,17 @@ pub const PowerPreference = enum(u32) {
     high_performance = 0x00000002,
 };
 
-pub const PresentMode = enum(u32) {
-    immediate = 0x00000000,
-    mailbox = 0x00000001,
-    fifo = 0x00000002,
+pub const PresentMode = switch (emscripten) {
+    true => enum(u32) {
+        fifo = 0x00000001,
+        immediate = 0x00000003,
+        mailbox = 0x00000004,
+    },
+    false => enum(u32) {
+        immediate = 0x00000000,
+        mailbox = 0x00000001,
+        fifo = 0x00000002,
+    },
 };
 
 pub const PrimitiveTopology = switch (emscripten) {

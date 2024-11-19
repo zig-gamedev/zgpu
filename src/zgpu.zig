@@ -173,16 +173,12 @@ pub const GraphicsContext = struct {
         properties.next_in_chain = null;
         adapter.getProperties(&properties);
 
-        //webgpu updated since our dawn builds.
-        //getInfo is new way to do this, some errors though
-        //var info: wgpu.AdapterInfo = undefined;
-        //info.next_in_chain = null;
-        //adapter.getInfo(&info);
         if (emscripten) {
+            properties.name = "emscripten";
+            properties.driver_description = "emscripten";
             properties.adapter_type = .unknown;
             properties.backend_type = .undef;
         }
-
         std.log.info("[zgpu] High-performance device has been selected:", .{});
         std.log.info("[zgpu]   Name: {s}", .{properties.name});
         std.log.info("[zgpu]   Driver: {s}", .{properties.driver_description});
