@@ -1357,6 +1357,21 @@ pub const Buffer = *opaque {
     }
     extern fn wgpuBufferGetMappedRange(buffer: Buffer, offset: usize, size: usize) ?*anyopaque;
 
+    pub fn getMapState(buffer: Buffer) BufferMapState {
+        return wgpuBufferGetMapState(buffer);
+    }
+    extern fn wgpuBufferGetMapState(buffer: Buffer) BufferMapState;
+
+    pub fn getSize(buffer: Buffer) usize {
+        return @intCast(wgpuBufferGetSize(buffer));
+    }
+    extern fn wgpuBufferGetSize(buffer: Buffer) u64;
+
+    pub fn getUsage(buffer: Buffer) BufferUsage {
+        return wgpuBufferGetUsage(buffer);
+    }
+    extern fn wgpuBufferGetUsage(buffer: Buffer) BufferUsage;
+
     // `offset` has to be a multiple of 8 (Dawn's validation layer will warn).
     // `size` has to be a multiple of 4 (Dawn's validation layer will warn).
     // `size == 0` will map entire range (from 'offset' to the end of the buffer).
