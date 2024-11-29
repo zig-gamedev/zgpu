@@ -727,7 +727,7 @@ pub const BindGroupDescriptor = extern struct {
 pub const BufferBindingLayout = extern struct {
     next_in_chain: ?*const ChainedStruct = null,
     binding_type: BufferBindingType = .uniform,
-    has_dynamic_offset: bool = false,
+    has_dynamic_offset: u32 = 0,
     min_binding_size: u64 = 0,
 };
 
@@ -1150,7 +1150,7 @@ pub const RenderPassDepthStencilAttachment = extern struct {
     stencil_load_op: LoadOp = .undef,
     stencil_store_op: StoreOp = .undef,
     stencil_clear_value: u32 = 0,
-    stencil_read_only: bool = false,
+    stencil_read_only: u32 = 0,
 };
 
 pub const RenderPassDescriptor = extern struct {

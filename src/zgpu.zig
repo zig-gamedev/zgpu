@@ -1122,7 +1122,7 @@ pub fn bufferEntry(
     binding: u32,
     visibility: wgpu.ShaderStage,
     binding_type: wgpu.BufferBindingType,
-    has_dynamic_offset: bool,
+    has_dynamic_offset: u32,
     min_binding_size: u64,
 ) wgpu.BindGroupLayoutEntry {
     return .{
