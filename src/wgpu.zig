@@ -1347,8 +1347,8 @@ pub const Buffer = *opaque {
     }
     extern fn wgpuBufferGetConstMappedRange(buffer: Buffer, offset: usize, size: usize) ?*const anyopaque;
 
-    // `offset` has to be a multiple of 8 (otherwise `null` will be returned).
-    // `@sizeOf(T) * len` has to be a multiple of 4 (otherwise `null` will be returned).
+    // `offset` - in bytes, has to be a multiple of 8 (otherwise `null` will be returned).
+    // `len` - length of slice to return, in elements of type T, `@sizeOf(T) * len` has to be a multiple of 4 (otherwise `null` will be returned).
     pub fn getMappedRange(buffer: Buffer, comptime T: type, offset: usize, len: usize) ?[]T {
         if (len == 0) return null;
         const ptr = wgpuBufferGetMappedRange(buffer, offset, @sizeOf(T) * len);
@@ -1372,9 +1372,8 @@ pub const Buffer = *opaque {
     }
     extern fn wgpuBufferGetUsage(buffer: Buffer) BufferUsage;
 
-    // `offset` has to be a multiple of 8 (Dawn's validation layer will warn).
-    // `size` has to be a multiple of 4 (Dawn's validation layer will warn).
-    // `size == 0` will map entire range (from 'offset' to the end of the buffer).
+    // `offset` - in bytes, has to be a multiple of 8 (Dawn's validation layer will warn).
+    // `size` - size of buffer to map in bytes, has to be a multiple of 4 (Dawn's validation layer will warn).
     pub fn mapAsync(
         buffer: Buffer,
         mode: MapMode,
