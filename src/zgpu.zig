@@ -1125,16 +1125,15 @@ pub fn bufferEntry(
     has_dynamic_offset: bool,
     min_binding_size: u64,
 ) wgpu.BindGroupLayoutEntry {
-    const emscripten_bool: u32 = switch (has_dynamic_offset) {
-        true => 1,
-        false => 0,
-    };
     return .{
         .binding = binding,
         .visibility = visibility,
         .buffer = .{
             .binding_type = binding_type,
-            .has_dynamic_offset = emscripten_bool,
+            .has_dynamic_offset = switch (has_dynamic_offset) {
+                true => 1,
+                false => 0,
+            },
             .min_binding_size = min_binding_size,
         },
     };
