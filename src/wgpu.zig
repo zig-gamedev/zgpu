@@ -734,7 +734,7 @@ pub const BindGroupDescriptor = extern struct {
 pub const BufferBindingLayout = extern struct {
     next_in_chain: ?*const ChainedStruct = null,
     binding_type: BufferBindingType = .uniform,
-    has_dynamic_offset: u32 = 0,
+    has_dynamic_offset: U32Bool = .false,
     min_binding_size: u64 = 0,
 };
 
@@ -774,12 +774,17 @@ pub const BindGroupLayoutDescriptor = extern struct {
     entries: ?[*]const BindGroupLayoutEntry,
 };
 
+pub const U32Bool = enum(u32) {
+    false = 0,
+    true = 1,
+};
+
 pub const BufferDescriptor = extern struct {
     next_in_chain: ?*const ChainedStruct = null,
     label: ?[*:0]const u8 = null,
     usage: BufferUsage,
     size: u64,
-    mapped_at_creation: u32 = 0,
+    mapped_at_creation: U32Bool = .false,
 };
 
 pub const CommandEncoderDescriptor = extern struct {
@@ -1153,11 +1158,11 @@ pub const RenderPassDepthStencilAttachment = extern struct {
     depth_load_op: LoadOp = .undef,
     depth_store_op: StoreOp = .undef,
     depth_clear_value: f32 = 0.0,
-    depth_read_only: u32 = 0,
+    depth_read_only: U32Bool = .false,
     stencil_load_op: LoadOp = .undef,
     stencil_store_op: StoreOp = .undef,
     stencil_clear_value: u32 = 0,
-    stencil_read_only: u32 = 0,
+    stencil_read_only: U32Bool = .false,
 };
 
 pub const RenderPassDescriptor = extern struct {

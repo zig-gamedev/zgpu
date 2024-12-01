@@ -426,7 +426,7 @@ pub const GraphicsContext = struct {
         const buffer_handle = gctx.createBuffer(.{
             .usage = .{ .copy_src = true, .map_write = true },
             .size = uniforms_buffer_size,
-            .mapped_at_creation = true,
+            .mapped_at_creation = .true,
         });
 
         // Add new (mapped) staging buffer to the buffer list.
