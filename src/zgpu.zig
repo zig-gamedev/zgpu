@@ -1131,8 +1131,8 @@ pub fn bufferEntry(
         .buffer = .{
             .binding_type = binding_type,
             .has_dynamic_offset = switch (has_dynamic_offset) {
-                true => 1,
-                false => 0,
+                true => .true,
+                false => .false,
             },
             .min_binding_size = min_binding_size,
         },
