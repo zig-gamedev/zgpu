@@ -138,10 +138,17 @@ pub const BufferMapAsyncStatus = enum(u32) {
     size_out_of_range = 0x00000008,
 };
 
-pub const BufferMapState = enum(u32) {
-    unmapped = 0x00000000,
-    pending = 0x00000001,
-    mapped = 0x00000002,
+pub const BufferMapState = switch (emscripten) {
+    true => enum(u32) {
+        unmapped = 0x00000001,
+        pending = 0x00000002,
+        mapped = 0x00000003,
+    },
+    false => enum(u32) {
+        unmapped = 0x00000000,
+        pending = 0x00000001,
+        mapped = 0x00000002,
+    },
 };
 
 pub const CompareFunction = enum(u32) {
