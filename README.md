@@ -24,7 +24,10 @@ pub fn build(b: *std.Build) void {
 
     const zgpu = b.dependency("zgpu", .{});
     exe.root_module.addImport("zgpu", zgpu.module("root"));
-    exe.linkLibrary(zgpu.artifact("zdawn"));
+
+    if (target.result.os.tag != .emscripten) {
+      exe.linkLibrary(zgpu.artifact("zdawn"));
+    }
 }
 ```
 
