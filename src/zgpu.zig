@@ -205,20 +205,26 @@ pub const GraphicsContext = struct {
                 }
             }).callback;
 
-            const toggles = [_][*:0]const u8{"skip_validation"};
+            var toggles: [2][*:0]const u8 = undefined;
+            var num_toggles: usize = 0;
+            if (zgpu_options.dawn_skip_validation) {
+                toggles[num_toggles] = "skip_validation";
+                num_toggles += 1;
+            }
+            if (zgpu_options.dawn_allow_unsafe_apis) {
+                toggles[num_toggles] = "allow_unsafe_apis";
+                num_toggles += 1;
+            }
             const dawn_toggles = wgpu.DawnTogglesDescriptor{
                 .chain = .{ .next = null, .struct_type = .dawn_toggles_descriptor },
-                .enabled_toggles_count = toggles.len,
+                .enabled_toggles_count = num_toggles,
                 .enabled_toggles = &toggles,
             };
 
             var response = Response{};
             adapter.requestDevice(
                 wgpu.DeviceDescriptor{
-                    .next_in_chain = if (zgpu_options.dawn_skip_validation)
-                        @ptrCast(&dawn_toggles)
-                    else
-                        null,
+                    .next_in_chain = @ptrCast(&dawn_toggles),
                     .required_features_count = options.required_features.len,
                     .required_features = options.required_features.ptr,
                     .required_limits = @ptrCast(options.required_limits),

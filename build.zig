@@ -4,6 +4,7 @@ const log = std.log.scoped(.zgpu);
 const default_options = struct {
     const uniforms_buffer_size = 4 * 1024 * 1024;
     const dawn_skip_validation = false;
+    const dawn_allow_unsafe_apis = false;
     const buffer_pool_size = 256;
     const texture_pool_size = 256;
     const texture_view_pool_size = 256;
@@ -32,6 +33,11 @@ pub fn build(b: *std.Build) void {
             "dawn_skip_validation",
             "Disable Dawn validation",
         ) orelse default_options.dawn_skip_validation,
+        .dawn_allow_unsafe_apis = b.option(
+            bool,
+            "dawn_allow_unsafe_apis",
+            "Allow unsafe WebGPU APIs (e.g. timestamp queries)",
+        ) orelse default_options.dawn_allow_unsafe_apis,
         .buffer_pool_size = b.option(
             u32,
             "buffer_pool_size",
