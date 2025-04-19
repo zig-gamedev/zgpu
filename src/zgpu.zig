@@ -22,12 +22,12 @@ pub const WindowProvider = struct {
     window: *anyopaque,
     fn_getTime: *const fn () f64,
     fn_getFramebufferSize: *const fn (window: *const anyopaque) [2]u32,
-    fn_getWin32Window: *const fn (window: *const anyopaque) ?*anyopaque = undefined,
-    fn_getX11Display: *const fn () ?*anyopaque = undefined,
+    fn_getWin32Window: *const fn (window: *const anyopaque) callconv(.c) *anyopaque = undefined,
+    fn_getX11Display: *const fn () callconv(.c) *anyopaque = undefined,
     fn_getX11Window: *const fn (window: *const anyopaque) u32 = undefined,
-    fn_getWaylandDisplay: ?*const fn () ?*anyopaque = null,
-    fn_getWaylandSurface: ?*const fn (window: *const anyopaque) ?*anyopaque = null,
-    fn_getCocoaWindow: *const fn (window: *const anyopaque) ?*anyopaque = undefined,
+    fn_getWaylandDisplay: ?*const fn () callconv(.c) *anyopaque = null,
+    fn_getWaylandSurface: ?*const fn (window: *const anyopaque) callconv(.c) *anyopaque = null,
+    fn_getCocoaWindow: *const fn (window: *const anyopaque) callconv(.c) ?*anyopaque = undefined,
 
     fn getTime(self: WindowProvider) f64 {
         return self.fn_getTime();
