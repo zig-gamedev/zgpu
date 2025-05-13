@@ -442,9 +442,6 @@ pub const GraphicsContext = struct {
         };
     }
 
-    //
-    // Submit/Present
-    //
     pub fn submit(gctx: *GraphicsContext, commands: []const wgpu.CommandBuffer) void {
         const stage_commands = stage_commands: {
             const stage_encoder = gctx.device.createCommandEncoder(null);
@@ -495,8 +492,6 @@ pub const GraphicsContext = struct {
         normal_execution,
         swap_chain_resized,
     } {
-        if (!emscripten) gctx.swapchain.present();
-
         const fb_size = gctx.window_provider.getFramebufferSize();
         if (gctx.swapchain_descriptor.width != fb_size[0] or
             gctx.swapchain_descriptor.height != fb_size[1])
@@ -515,6 +510,8 @@ pub const GraphicsContext = struct {
                 return .swap_chain_resized;
             }
         }
+
+        if (!emscripten) gctx.swapchain.present();
 
         return .normal_execution;
     }
