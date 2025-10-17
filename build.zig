@@ -112,7 +112,7 @@ pub fn build(b: *std.Build) void {
 
     const zdawn = b.addLibrary(.{
         .name = "zdawn",
-        .linkage = .dynamic,
+        .use_llvm = true,
         .root_module = b.createModule(.{
             .target = target,
             .optimize = optimize,
@@ -144,6 +144,7 @@ pub fn build(b: *std.Build) void {
 
     const tests = b.addTest(.{
         .name = "zgpu-tests",
+        .use_llvm = true,
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/zgpu.zig"),
             .target = target,
