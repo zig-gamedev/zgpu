@@ -110,54 +110,60 @@ pub fn build(b: *std.Build) void {
         },
     });
 
-    const zdawn = b.addLibrary(.{
-        .name = "zdawn",
-        .use_llvm = true,
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-        }),
-    });
-    b.installArtifact(zdawn);
-
-    linkSystemDeps(b, zdawn);
-    addLibraryPathsTo(zdawn);
-
-    zdawn.linkSystemLibrary("dawn");
-    zdawn.linkLibC();
-    if (target.result.abi != .msvc)
-        zdawn.linkLibCpp();
-
-    zdawn.addIncludePath(b.path("libs/dawn/include"));
-    zdawn.addIncludePath(b.path("src"));
-
-    zdawn.addCSourceFile(.{
-        .file = b.path("src/dawn.cpp"),
-        .flags = &.{ "-std=c++17", "-fno-sanitize=undefined" },
-    });
-    zdawn.addCSourceFile(.{
-        .file = b.path("src/dawn_proc.c"),
-        .flags = &.{"-fno-sanitize=undefined"},
-    });
-
     const test_step = b.step("test", "Run zgpu tests");
 
-    const tests = b.addTest(.{
-        .name = "zgpu-tests",
-        .use_llvm = true,
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("src/zgpu.zig"),
-            .target = target,
-            .optimize = optimize,
-        }),
-    });
-    tests.addIncludePath(b.path("libs/dawn/include"));
-    tests.linkLibrary(zdawn);
-    linkSystemDeps(b, tests);
-    addLibraryPathsTo(tests);
-    b.installArtifact(tests);
+    // Emscripten builds are expected to link against the toolchain-provided WebGPU
+    // implementation (e.g. `--use-port=emdawnwebgpu`), so we skip building `zdawn`.
+    if (target.result.os.tag != .emscripten) {
+        const zdawn = b.addLibrary(.{
+            .name = "zdawn",
+            .use_llvm = true,
+            .root_module = b.createModule(.{
+                .target = target,
+                .optimize = optimize,
+            }),
+        });
+        b.installArtifact(zdawn);
 
-    test_step.dependOn(&b.addRunArtifact(tests).step);
+        linkSystemDeps(b, zdawn);
+        addLibraryPathsTo(zdawn);
+
+        zdawn.linkSystemLibrary("dawn");
+        zdawn.linkLibC();
+        if (target.result.abi != .msvc)
+            zdawn.linkLibCpp();
+
+        zdawn.addIncludePath(b.path("libs/dawn/include"));
+        zdawn.addIncludePath(b.path("src"));
+
+        zdawn.addCSourceFile(.{
+            .file = b.path("src/dawn.cpp"),
+            .flags = &.{ "-std=c++17", "-fno-sanitize=undefined" },
+        });
+        zdawn.addCSourceFile(.{
+            .file = b.path("src/dawn_proc.c"),
+            .flags = &.{"-fno-sanitize=undefined"},
+        });
+
+        const tests = b.addTest(.{
+            .name = "zgpu-tests",
+            .use_llvm = true,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("src/zgpu.zig"),
+                .target = target,
+                .optimize = optimize,
+            }),
+        });
+        tests.root_module.addImport("zgpu_options", options_module);
+        tests.root_module.addImport("zpool", b.dependency("zpool", .{}).module("root"));
+        tests.addIncludePath(b.path("libs/dawn/include"));
+        tests.linkLibrary(zdawn);
+        linkSystemDeps(b, tests);
+        addLibraryPathsTo(tests);
+        b.installArtifact(tests);
+
+        test_step.dependOn(&b.addRunArtifact(tests).step);
+    }
 }
 
 pub fn linkSystemDeps(b: *std.Build, compile_step: *std.Build.Step.Compile) void {
