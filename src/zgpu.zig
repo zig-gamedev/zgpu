@@ -10,7 +10,10 @@ const math = std.math;
 const assert = std.debug.assert;
 const wgsl = @import("common_wgsl.zig");
 const zgpu_options = @import("zgpu_options");
-pub const wgpu = @import("wgpu.zig");
+pub const wgpu = if (@import("builtin").target.os.tag == .emscripten)
+    @import("wgpu_emscripten.zig")
+else
+    @import("wgpu.zig");
 pub const slog = std.log.scoped(.zgpu); // scoped log that can be comptime processed in main logger
 const emscripten = @import("builtin").target.os.tag == .emscripten;
 
@@ -28,6 +31,7 @@ pub const WindowProvider = struct {
     fn_getWaylandDisplay: ?*const fn () callconv(.c) *anyopaque = null,
     fn_getWaylandSurface: ?*const fn (window: *const anyopaque) callconv(.c) *anyopaque = null,
     fn_getCocoaWindow: *const fn (window: *const anyopaque) callconv(.c) ?*anyopaque = undefined,
+    fn_getAndroidNativeWindow: *const fn (window: *const anyopaque) callconv(.c) *anyopaque = undefined,
 
     fn getTime(self: WindowProvider) f64 {
         return self.fn_getTime();
@@ -67,6 +71,10 @@ pub const WindowProvider = struct {
 
     fn getCocoaWindow(self: WindowProvider) ?*anyopaque {
         return self.fn_getCocoaWindow(self.window);
+    }
+
+    fn getAndroidNativeWindow(self: WindowProvider) ?*anyopaque {
+        return self.fn_getAndroidNativeWindow(self.window);
     }
 };
 
@@ -498,7 +506,7 @@ pub const GraphicsContext = struct {
         normal_execution,
         swap_chain_resized,
     } {
-        if (!emscripten) gctx.swapchain.present();
+        gctx.swapchain.present();
 
         const fb_size = gctx.window_provider.getFramebufferSize();
         if (gctx.swapchain_descriptor.width != fb_size[0] or
