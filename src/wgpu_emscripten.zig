@@ -1328,14 +1328,44 @@ pub const SwapChain = struct {
     }
 
     pub fn getCurrentTextureView(sc: *SwapChain) TextureView {
+        // If the user didn't call `present()` in a previous frame (or called
+        // `getCurrentTextureView()` multiple times), don't leak the acquired texture.
+        if (sc.acquired) |t| {
+            t.release();
+            sc.acquired = null;
+        }
+
         var st: c.WGPUSurfaceTexture = .{ .nextInChain = null, .texture = null, .status = @intCast(c.WGPUSurfaceGetCurrentTextureStatus_Error) };
-        c.wgpuSurfaceGetCurrentTexture(@ptrCast(sc.surface), &st);
+        var attempts: u32 = 0;
+        while (attempts < 2) : (attempts += 1) {
+            c.wgpuSurfaceGetCurrentTexture(@ptrCast(sc.surface), &st);
+            if (st.status == c.WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal or
+                st.status == c.WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal)
+            {
+                break;
+            }
+
+            // These can happen legitimately on the web (resize, tab backgrounding, etc.).
+            if (st.status == c.WGPUSurfaceGetCurrentTextureStatus_Outdated or
+                st.status == c.WGPUSurfaceGetCurrentTextureStatus_Lost)
+            {
+                // Re-configure with our last known config and try again once.
+                c.wgpuSurfaceConfigure(@ptrCast(sc.surface), &sc.config);
+                continue;
+            }
+
+            // Timeout/Error/OutOfMemory: skip this frame (callers may still run
+            // their resize/recreate logic in `GraphicsContext.present()`).
+            return @ptrFromInt(0);
+        }
+
         if (st.status != c.WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal and
             st.status != c.WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal)
         {
-            @panic("wgpuSurfaceGetCurrentTexture failed");
+            return @ptrFromInt(0);
         }
-        sc.acquired = @ptrCast(st.texture.?);
+
+        sc.acquired = @ptrCast(st.texture orelse return @ptrFromInt(0));
         return sc.acquired.?.createView(.{});
     }
 
@@ -1450,6 +1480,7 @@ pub const Texture = *opaque {
 
 pub const TextureView = *opaque {
     pub fn release(view: TextureView) void {
+        if (@intFromPtr(view) == 0) return;
         c.wgpuTextureViewRelease(@ptrCast(view));
     }
 };
