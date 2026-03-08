@@ -121,9 +121,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(zdawn);
 
     linkSystemDeps(b, zdawn);
-    addLibraryPathsTo(zdawn);
 
-    zdawn.linkSystemLibrary("dawn");
     zdawn.linkLibC();
     if (target.result.abi != .msvc)
         zdawn.linkLibCpp();
@@ -219,6 +217,7 @@ pub fn addLibraryPathsTo(compile_step: *std.Build.Step.Compile) void {
         },
         else => {},
     }
+    compile_step.linkSystemLibrary("dawn");
 }
 
 pub fn checkTargetSupported(target: std.Target) bool {
