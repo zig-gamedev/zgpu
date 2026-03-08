@@ -20,15 +20,51 @@ Example `build.zig`:
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{ ... });
 
-    @import("zgpu").addLibraryPathsTo(exe);
-
     const zgpu = b.dependency("zgpu", .{});
     exe.root_module.addImport("zgpu", zgpu.module("root"));
 
-    if (target.result.os.tag != .emscripten) {
-      exe.linkLibrary(zgpu.artifact("zdawn"));
-    }
+    // Adds platform-specific library search paths and links the
+    // prebuilt dawn library to the executable.
+    @import("zgpu").addLibraryPathsTo(exe);
+
+    // Link the zdawn C/C++ wrapper artifact.
+    exe.linkLibrary(zgpu.artifact("zdawn"));
 }
+```
+
+## Fetching prebuilt Dawn libraries
+
+zgpu uses prebuilt Dawn binaries as lazy dependencies. You need to fetch the one matching your target platform:
+
+**Windows (x86_64):**
+```sh
+zig fetch --save=dawn_x86_64_windows_gnu https://github.com/michal-z/webgpu_dawn-x86_64-windows-gnu/archive/d3a68014e6b6b53fd330a0ccba99e4dcfffddae5.tar.gz
+```
+
+**Linux (x86_64):**
+```sh
+zig fetch --save=dawn_x86_64_linux_gnu https://github.com/michal-z/webgpu_dawn-x86_64-linux-gnu/archive/7d70db023bf254546024629cbec5ee6113e12a42.tar.gz
+```
+
+**Linux (aarch64):**
+```sh
+zig fetch --save=dawn_aarch64_linux_gnu https://github.com/michal-z/webgpu_dawn-aarch64-linux-gnu/archive/c1f55e740a62f6942ff046e709ecd509a005dbeb.tar.gz
+```
+
+**macOS (aarch64 / Apple Silicon):**
+```sh
+zig fetch --save=dawn_aarch64_macos https://github.com/michal-z/webgpu_dawn-aarch64-macos/archive/d2360cdfff0cf4a780cb77aa47c57aca03cc6dfe.tar.gz
+```
+
+**macOS (x86_64):**
+```sh
+zig fetch --save=dawn_x86_64_macos https://github.com/michal-z/webgpu_dawn-x86_64-macos/archive/901716b10b31ce3e0d3fe479326b41e91d59c661.tar.gz
+```
+
+You also need the system SDK dependency:
+
+```sh
+zig fetch --save=system_sdk https://github.com/zig-gamedev/system_sdk/archive/c0dbf11cdc17da5904ea8a17eadc54dee26567ec.tar.gz
 ```
 
 ## Sample applications
@@ -46,29 +82,29 @@ Below you can find an overview of main `zgpu` features.
 
 ### Compile-time options
 
-You can override default options in your `build.zig`:
+You can override default options by passing them to `b.dependency`:
 
 ```zig
 pub fn build(b: *std.Build) void {
     ...
 
-    const zgpu = @import("zgpu").package(b, target, optimize, .{
-        .options = .{
-            .uniforms_buffer_size = 4 * 1024 * 1024,
-            .dawn_skip_validation = false,
-            .buffer_pool_size = 256,
-            .texture_pool_size = 256,
-            .texture_view_pool_size = 256,
-            .sampler_pool_size = 16,
-            .render_pipeline_pool_size = 128,
-            .compute_pipeline_pool_size = 128,
-            .bind_group_pool_size = 32,
-            .bind_group_layout_pool_size = 32,
-            .pipeline_layout_pool_size = 32,
-        },
+    const zgpu = b.dependency("zgpu", .{
+        .uniforms_buffer_size = 4 * 1024 * 1024,
+        .dawn_skip_validation = false,
+        .buffer_pool_size = 256,
+        .texture_pool_size = 256,
+        .texture_view_pool_size = 256,
+        .sampler_pool_size = 16,
+        .render_pipeline_pool_size = 128,
+        .compute_pipeline_pool_size = 128,
+        .bind_group_pool_size = 32,
+        .bind_group_layout_pool_size = 32,
+        .pipeline_layout_pool_size = 32,
     });
 
-    zgpu.link(exe);
+    exe.root_module.addImport("zgpu", zgpu.module("root"));
+    @import("zgpu").addLibraryPathsTo(exe);
+    exe.linkLibrary(zgpu.artifact("zdawn"));
 
     ...
 }
