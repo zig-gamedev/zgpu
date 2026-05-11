@@ -13,7 +13,7 @@
     },
     .dependencies = .{
         .zpool = .{
-            .url = "git+https://github.com/zig-gamedev/zpool.git#02d1472cc4c134a86ff31d19fb546cf478f6b988",
+            .url = "https://github.com/zig-gamedev/zpool/archive/02d1472cc4c134a86ff31d19fb546cf478f6b988.tar.gz",
             .hash = "zpool-0.11.0-dev-bG692YNGAQCn-LXPTcrabIVizgnPcxkxYjwKYAnJi6Tp",
         },
         .system_sdk = .{
