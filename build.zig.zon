@@ -45,5 +45,9 @@
             .hash = "N-V-__8AAIz1QAKx8C8vft2YoHjGTjEAkH2QMR2UiAo8xZJ-",
             .lazy = true,
         },
+        .zgpu = .{
+            .url = "git+https://github.com/Subo2002/zgpu.git#48b3d433d7ed774b3ebf89c1304b181ef8cd47cd",
+            .hash = "zgpu-0.12.0-dev-nqFT5DKoCADar3gqkvmL2ObRxzGqmEnOlzgNvT9tJ0jw",
+        },
     },
 }
