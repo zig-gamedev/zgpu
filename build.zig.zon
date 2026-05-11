@@ -13,8 +13,8 @@
     },
     .dependencies = .{
         .zpool = .{
-            .url = "git+https://github.com/Subo2002/zpool/?ref=0.16.x#e235b6a6eaf37d0c9881f06cce0536ab8dab6aec",
-            .hash = "zpool-0.11.0-dev-bG692dNGAQA8WWL868t4sPOI-9fixkS626QZeovwNVkn",
+            .url = "git+https://github.com/zig-gamedev/zpool.git#02d1472cc4c134a86ff31d19fb546cf478f6b988",
+            .hash = "zpool-0.11.0-dev-bG692YNGAQCn-LXPTcrabIVizgnPcxkxYjwKYAnJi6Tp",
         },
         .system_sdk = .{
             .url = "https://github.com/zig-gamedev/system_sdk/archive/c0dbf11cdc17da5904ea8a17eadc54dee26567ec.tar.gz",
