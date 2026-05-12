@@ -3,7 +3,7 @@ const emscripten = @import("builtin").target.os.tag == .emscripten;
 
 test "extern struct ABI compatibility" {
     @setEvalBranchQuota(10_000);
-    const wgpu = @cImport(@cInclude("dawn/webgpu.h"));
+    const wgpu = @import("dawn_webgpu");
     inline for (comptime std.meta.declarations(@This())) |decl| {
         const ZigType = @field(@This(), decl.name);
         if (@TypeOf(ZigType) != type) {
