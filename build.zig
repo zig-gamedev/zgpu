@@ -138,6 +138,12 @@ pub fn build(b: *std.Build) void {
 
     const test_step = b.step("test", "Run zgpu tests");
 
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("libs/dawn/include/webgpu/webgpu.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+    translate_c.addIncludePath(b.path("libs/dawn/include"));
     const tests = b.addTest(.{
         .name = "zgpu-tests",
         .use_llvm = true,
@@ -145,6 +151,9 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path("src/zgpu.zig"),
             .target = target,
             .optimize = optimize,
+            .imports = &.{
+                .{ .name = "dawn_webgpu", .module = translate_c.createModule() },
+            },
         }),
     });
     tests.root_module.addIncludePath(b.path("libs/dawn/include"));
