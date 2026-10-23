@@ -2,7 +2,7 @@
     .name = .zgpu,
     .fingerprint = 0x670ebe04e453a19e,
     .version = "0.12.0-dev",
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.17.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -13,8 +13,8 @@
     },
     .dependencies = .{
         .zpool = .{
-            .url = "https://github.com/zig-gamedev/zpool/archive/02d1472cc4c134a86ff31d19fb546cf478f6b988.tar.gz",
-            .hash = "zpool-0.11.0-dev-bG692YNGAQCn-LXPTcrabIVizgnPcxkxYjwKYAnJi6Tp",
+            .url = "https://github.com/zig-gamedev/zpool/archive/f99ee2483b893978492881887a9a256bead24335.tar.gz",
+            .hash = "zpool-0.11.0-dev-bG692RZEAQCXkpITAcuuGU-PUSJppm-C-Lcjo-p2BON6",
         },
         .system_sdk = .{
             .url = "https://github.com/zig-gamedev/system_sdk/archive/c0dbf11cdc17da5904ea8a17eadc54dee26567ec.tar.gz",

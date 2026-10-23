@@ -5,17 +5,17 @@ test "extern struct ABI compatibility" {
     @setEvalBranchQuota(10_000);
     const wgpu = @import("dawn_webgpu");
     inline for (comptime std.meta.declarations(@This())) |decl| {
-        const ZigType = @field(@This(), decl.name);
+        const ZigType = @field(@This(), decl);
         if (@TypeOf(ZigType) != type) {
             continue;
         }
         if (comptime std.meta.activeTag(@typeInfo(ZigType)) == .@"struct" and
             @typeInfo(ZigType).@"struct".layout == .@"extern")
         {
-            const wgpu_name = "WGPU" ++ decl.name;
+            const wgpu_name = "WGPU" ++ decl;
             const CType = @field(wgpu, wgpu_name);
             std.testing.expectEqual(@sizeOf(CType), @sizeOf(ZigType)) catch |err| {
-                std.log.err("@sizeOf({s}) != @sizeOf({s})", .{ wgpu_name, decl.name });
+                std.log.err("@sizeOf({s}) != @sizeOf({s})", .{ wgpu_name, decl });
                 return err;
             };
             comptime var i: usize = 0;
@@ -26,7 +26,7 @@ test "extern struct ABI compatibility" {
                 ) catch |err| {
                     std.log.err(
                         "@offsetOf({s}, {s}) != @offsetOf({s}, {s})",
-                        .{ wgpu_name, c_field_name, decl.name, std.meta.fieldNames(ZigType)[i] },
+                        .{ wgpu_name, c_field_name, decl, std.meta.fieldNames(ZigType)[i] },
                     );
                     return err;
                 };
